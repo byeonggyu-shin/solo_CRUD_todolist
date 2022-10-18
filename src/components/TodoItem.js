@@ -1,7 +1,9 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { MdDone, MdDelete } from 'react-icons/md';
-import { useTodoDispatch } from '../TodoContext';
+import { useState, useEffect } from 'react';
+
+
 
 const Remove = styled.div`
   display: flex;
@@ -69,82 +71,46 @@ const Text = styled.div`
 `;
 
 // function TodoItem({ id, done, text }) {
-
 //   const dispatch = useTodoDispatch();
+//   const onToggle = () => dispatch({ type: 'TOGGLE', id });
+//   console.log(id)
+//   const onRemove = () => dispatch({ type: 'REMOVE', id });
 
-//   const onToggle = () => {
-//     // console.log(done)
-//     // if (!done) {
-//     //   fetch(`http://localhost:3001/todos/${id}`, {
-//     //     method: "PATCH",
-//     //     headers: { "Content-Type": "Application/json" },
-//     //     body: JSON.stringify({ "done": true })
-//     //   })
-//     //     .then(() => {
-//     //       window.location.href = `http://localhost:3000/todos/`;
-//     //     })
-//     //     .catch((error) => {
-//     //       console.error('Error', error);
-//     //     })
-//     // }
-//     // else {
-//     //   fetch(`http://localhost:3001/todos/${id}`, {
-//     //     method: "PATCH",
-//     //     headers: { "Content-Type": "Application/json" },
-//     //     body: JSON.stringify({ "done": false })
-//     //   })
-//     //     .then(() => {
-//     //       // window.location.href = `http://localhost:3000/todos/`;
-//     //     })
-//     //     .catch((error) => {
-//     //       console.error('Error', error);
-//     //     })
-//     // }
 
-//     dispatch({
-//       type: 'TOGGLE',
-//       id
-//     });
-//   };
 
-//   const onRemove = () => {
-//     // fetch(`http://localhost:3001/todos/${id}`, {
-//     //   method: "DELETE",
-//     // })
-//     //   .then(() => {
-//     //     // window.location.href = 'http://localhost:3000';
-//     //   })
-//     //   .catch((error) => {
-//     //     console.error('Error', error);
-//     //   })
+function TodoItem({ todoList, setTodoList, id, done, text }) {
+  const [isChecked, setIsChecked] = useState(done);
+  // 체크박스 체크 여부
 
-//     dispatch({
-//       type: 'REMOVE',
-//       id
-//     });
-//     console.log(id)
-//   };
+  // 체크박스 제어
+  const onToggle = () => {
+    setIsChecked(!isChecked);
+    window.location.reload()
+  };
 
-//   return (
-//     <TodoItemBlock>
+  useEffect(() => {
+    fetch(`http://localhost:3001/todos/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: text,
+        done: isChecked,
+      }),
+    })
+  }, [isChecked])
 
-//       <Text done={done}>{text}</Text>
-//       <CheckCircle done={done} onClick={onToggle}>
-//         {done && <MdDone />}
-//       </CheckCircle>
-//       <Remove onClick={onRemove}>
-//         <MdDelete />
-//       </Remove>
-//     </TodoItemBlock>
-//   );
-// }
 
-// export default React.memo(TodoItem);
-function TodoItem({ id, done, text }) {
-  const dispatch = useTodoDispatch();
-  const onToggle = () => dispatch({ type: 'TOGGLE', id });
-  console.log(id)
-  const onRemove = () => dispatch({ type: 'REMOVE', id });
+
+  const onRemove = () => {
+    const newTodoList = todoList.slice().filter(el => el.id !== id);
+    fetch(`http://localhost:3001/todos/${id}`, {
+      method: 'DELETE',
+    }).then(setTodoList(newTodoList));
+  };
+
+
   return (
     <TodoItemBlock>
       <Text done={done}>{text}</Text>
@@ -158,4 +124,4 @@ function TodoItem({ id, done, text }) {
   );
 }
 
-export default React.memo(TodoItem);
+export default TodoItem;

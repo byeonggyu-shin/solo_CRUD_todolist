@@ -35,9 +35,9 @@ function TodoHead({ todoList, setTodoList }) {
     month: 'long',
     day: 'numeric'
   });
-
+  console.log(todoList)
   const dayName = today.toLocaleString('ko-KR', { weekday: 'long' });
-  const todos = useTodoState();
+  const todos = todoList;
   const undoneTasks = todos.filter(todo => !todo.done);
 
   return (

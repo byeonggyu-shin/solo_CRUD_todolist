@@ -21,10 +21,13 @@ function TodoList({ todoList, setTodoList }) {
     <TodoListBlock>
       {todoList.map(todo => (
         <TodoItem
+          todoList={todoList}
+          setTodoList={setTodoList}
+
           id={todo.id}
           text={todo.text}
           done={todo.done}
-          setTodoList={setTodoList}
+
         />
       ))}
     </TodoListBlock>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { MdAdd } from 'react-icons/md';
-import { useTodoDispatch, useTodoNextId } from '../TodoContext';
 
 const CircleButton = styled.button`
   background: #38d9a9;
@@ -83,30 +82,33 @@ const Input = styled.input`
 `;
 
 
-function TodoCreate() {
+
+function TodoCreate({ todoList, setTodoList }) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
 
-  const dispatch = useTodoDispatch();
-  const nextId = useTodoNextId();
 
   const onToggle = () => setOpen(!open);
-  const onChange = e => setValue(e.target.value);
-  const onSubmit = e => {
-    e.preventDefault(); // 새로고침 방지
-    dispatch({
-      type: 'CREATE',
-      todo: {
-        id: nextId.current,
-        text: value,
-        done: false
-      }
-    });
-    setValue('');
-    setOpen(false);
-    nextId.current += 1;
+
+  const onChange = e => {
+    setValue(e.target.value);
   };
 
+  const onSubmit = e => {
+    fetch("http://localhost:3001/todos/", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: value,
+        done: false,
+      }),
+    })
+      .then(res => res.json())
+      .then(res => setTodoList([...todoList, res]));
+    setValue('');
+  };
 
 
   return (
@@ -130,4 +132,4 @@ function TodoCreate() {
   );
 }
 
-export default React.memo(TodoCreate);
+export default TodoCreate;
